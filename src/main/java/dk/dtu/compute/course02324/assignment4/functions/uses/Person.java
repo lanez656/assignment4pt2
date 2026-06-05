@@ -17,6 +17,7 @@ public class Person implements Comparable<Person> {
 
     // TODO Assignment 4a:
     //  add a non-final Integer age field with setters and getters, viz. setAge(...) and getAge(...)
+    private int age;
 
     Person(@NotNull String name,
            @NotNull double weight,
@@ -29,8 +30,15 @@ public class Person implements Comparable<Person> {
             throw new IllegalArgumentException("Person age must be non-negative (\""+age+"\" given)");
         this.name = name;
         this.weight = weight;
+        this.age = age;
     }
 
+    public int getAge() {return age;}
+
+    public void setAge(int age) throws IllegalArgumentException {
+        if (age >= 0) {this.age = age;}
+        else {throw new IllegalArgumentException("age must not be negative");}
+    }
 
     @Override
     public int compareTo(@NotNull Person o) {
@@ -53,7 +61,7 @@ public class Person implements Comparable<Person> {
      */
     @Override
     public String toString() {
-        return name + ", " + weight + "kg";
+        return name + ", " + weight + "kg, Age: " + age;
     }
 
     /*

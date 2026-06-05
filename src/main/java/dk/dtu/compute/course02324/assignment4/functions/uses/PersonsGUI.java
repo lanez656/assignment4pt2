@@ -2,6 +2,8 @@ package dk.dtu.compute.course02324.assignment4.functions.uses;
 
 
 import dk.dtu.compute.course02324.assignment4.functions.implementations.GenericComparator;
+
+import java.lang.reflect.Field;
 import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -45,6 +47,9 @@ public class PersonsGUI extends VBox {
     /** Average weight of all persons in list */
     Label averageWeightLabel = new Label("Average weight: 0.0 kg");
 
+    Label minAgeLabel = new Label("Youngest person: 0 years old ");
+    Label maxAgeLabel = new Label("Oldest person: 0 years old ");
+
     // TODO Assignment 4a:
     //  Show Min and Max age of all Persons in list
 
@@ -80,10 +85,16 @@ public class PersonsGUI extends VBox {
         nameField.setPrefColumnCount(8);
         nameField.setText("name");
 
+        Label ageLabel = new Label("Age: (must be positive!)  ");
+        TextField ageField = new TextField();
+        ageField.setPrefColumnCount(2);
+
         // TODO Assignment 3: this is a Label about adding the Weight of a person;
         //      you must add a TextField to take the input of the user (a positive int/double)
         //      and pass it to the constructor of the new Person created in the list
         Label weightLabel = new Label(" Weight (> 0):   ");
+        TextField weightField = new TextField();
+        weightField.setPrefColumnCount(2);
 
         // TODO Assignment 4a: add a Label and TextField for a Person's age
 
@@ -94,15 +105,21 @@ public class PersonsGUI extends VBox {
 
         // button for adding a new person to the list (based on
         // the name in the nameField and age in weightField)
-        Button addButton = new Button("Add");
+        Button addButton = new Button("Add at end of list");
         addButton.setOnAction(
                 e -> {
                     // TODO Assignments 3 and 4a:
                     //  a Person's weight and age should be input by the user in a TextField each
-                    Person person = new Person(nameField.getText(), DEFAULT_WEIGHT, DEFAULT_AGE);
-                    persons.add(person);
-                    statusLabel.setText(person + " added!");
-                    // makes sure that the GUI is updated accordingly
+                    try {
+                        Person person = new Person(nameField.getText(),
+                                Double.parseDouble(weightField.getText()),
+                                Integer.parseInt(ageField.getText()));
+                        persons.add(person);
+                        statusLabel.setText(person + " added!");
+                        // makes sure that the GUI is updated accordingly
+                    } catch (Exception er) {
+                        textAreaExceptions.appendText(er.getMessage() + "\n");
+                    }
                     update();
                 });
 
@@ -138,23 +155,45 @@ public class PersonsGUI extends VBox {
         // button for adding a new person to the list at the given index (based on
         // the attributes in the nameField and the weightField
         // TODO Assignment 3: implement "add at index" functionality
-        Button addButtonAt = new Button("Add at index " + "TODO!!");
-
+        Button addButtonAt = new Button("Add at index ");
+        addButtonAt.setOnAction(
+                e->{
+                    try {
+                        Person person = new Person(nameField.getText(),
+                                Double.parseDouble(weightField.getText()),
+                                Integer.parseInt(ageField.getText()));
+                        persons.add(Integer.parseInt(indexField.getText()), person);
+                        statusLabel.setText(person + " added!");
+                        // makes sure that the GUI is updated accordingly
+                    } catch (Exception er) {
+                        textAreaExceptions.appendText(er.getMessage() + "\n");
+                    }
+                    update();
+                }
+        );
         // elements that appear horizontally side-by-side
         // TODO Assignment 4a: add age
+
         HBox nameAction   = new HBox(nameLabel, nameField);
-        HBox indexAction  = new HBox(indexField, addButtonAt);
+        HBox ageAction = new HBox(ageLabel, ageField);
+        HBox weightAction = new HBox(weightLabel, weightField);
+        HBox indexAction  = new HBox(addButtonAt, indexField);
+
 
         // combines the above elements into vertically arranged boxes
         // which are then added to the left column of the grid pane
         VBox actionBox = new VBox(
                 nameAction,
+                ageAction,
+                weightAction,
                 addButton,
                 indexAction,
                 sortButton,
                 clearButton,
                 mostFrequentNameLabel,
-                averageWeightLabel);
+                averageWeightLabel,
+                minAgeLabel,
+                maxAgeLabel);
         actionBox.setSpacing(5.0);
         gridPane.add(actionBox, 0, 0);
 
@@ -236,11 +275,31 @@ public class PersonsGUI extends VBox {
             personsPane.add(entry, 0, i);
         }
         // update display fields
-        mostFrequentNameLabel.setText("Most frequent name: " + "TODO!!!");
+
+        Map<String, Integer> map = new HashMap<>();
+        for (Person person : persons) {
+            map.put(
+                    person.name,
+                    map.getOrDefault(person.name, 0) + 1
+            );
+        }
+        String mostFrequent = null;
+        int max = 0;
+        for (String name : map.keySet()) {
+            if (map.get(name) > max) {
+                max = map.get(name);
+                mostFrequent = name;
+            }
+        }
+        mostFrequentNameLabel.setText("Most frequent name: " + mostFrequent);
 
         // TODO Assignment 4a:
         //      compute the average weight of all persons in the list without using loops;
         //      instead use the stream()...map(...)...reduce(...) interfaces from Lecture 07
+        double sumWeight = persons.stream().map(p->p.weight).
+                reduce(0.0, Double::sum);
+        double avgWeight = sumWeight/persons.toArray().length;
+        averageWeightLabel.setText("Average weight: " + avgWeight + " kg");
 
         // Note: there are other declarative interfaces of Java that can be useful here,
         //       see https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html
@@ -248,6 +307,10 @@ public class PersonsGUI extends VBox {
         // TODO Assignment 4a:
         //      compute the min and max age of all persons in the list without using loops;
         //      instead use the stream()...map(...)...reduce(...) interfaces from Lecture 07
+        int minAge = persons.stream().map(Person::getAge).reduce(Integer.MAX_VALUE, Integer::min);
+        minAgeLabel.setText("Youngest person: " + minAge + " years old ");
+        int maxAge = persons.stream().map(Person::getAge).reduce(Integer.MIN_VALUE, Integer::max);
+        maxAgeLabel.setText("Oldest person: " + maxAge + " years old ");
     }
 }
 
