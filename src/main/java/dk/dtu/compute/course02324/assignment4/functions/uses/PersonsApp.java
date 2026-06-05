@@ -12,8 +12,8 @@ import javafx.stage.Stage;
 
 // TODO Assignment 4a:
 //  change the following imports for the standard Java Collections, here and everywhere
-import dk.dtu.compute.course02324.assignment4.functions.types.List;
-import dk.dtu.compute.course02324.assignment4.functions.implementations.ArrayList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple JavaFX application with a simple GUI for manually

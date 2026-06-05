@@ -2,7 +2,7 @@ package dk.dtu.compute.course02324.assignment4.functions.uses;
 
 
 import dk.dtu.compute.course02324.assignment4.functions.implementations.GenericComparator;
-import dk.dtu.compute.course02324.assignment4.functions.types.List;
+import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
