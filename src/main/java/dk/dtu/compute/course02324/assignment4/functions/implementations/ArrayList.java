@@ -45,50 +45,96 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public @NotNull E get(int pos) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (pos < 0 || pos >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        return list[pos];
     }
 
     @Override
     public E set(int pos, @NotNull E e) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (pos < 0 || pos >= size) {throw new IndexOutOfBoundsException();}
+        if (e == null) {throw new IllegalArgumentException();}
+        E oldValue = list[pos];
+        list[pos] = e;
+        return oldValue;
     }
 
     @Override
-    public boolean add(@NotNull E e) {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+    public boolean add(@NotNull E e) throws IllegalArgumentException{
+        if (e == null) {throw new IllegalArgumentException();}
+        if (size == list.length) {
+            E[] newArray = createEmptyArray(size*2);
+            System.arraycopy(list, 0, newArray, 0, size);
+            list = newArray;
+        }
+        list[size] = e;
+        size++;
+        return true;
     }
 
     @Override
     public boolean add(int pos, @NotNull E e) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (e == null) {throw new IllegalArgumentException();}
+        if (pos < 0 || pos > size) {throw new IndexOutOfBoundsException();}
+        if (size == list.length) {
+            E[] newArray = createEmptyArray(size*2);
+            System.arraycopy(list, 0, newArray, 0, size);
+            list = newArray;
+        }
+        shiftElementsUpFrom(pos);
+        list[pos] = e;
+        size++;
+        return true;
     }
 
     @Override
     public E remove(int pos) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (pos < 0 || pos >= size) {throw new IndexOutOfBoundsException();}
+        E oldvalue = list[pos];
+        shiftElementsDownTo(pos);
+        size--;
+        list[size] = null;
+        return oldvalue;
     }
 
     @Override
-    public boolean remove(E e) {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+    public boolean remove(E e) throws IllegalArgumentException {
+        if (e == null) {throw new IllegalArgumentException();}
+        for (int i = 0; i < size; i++) {
+            if (list[i].equals(e)) {
+                shiftElementsDownTo(i);
+                size--;
+                list[size] = null;
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
-    public int indexOf(E e) {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+    public int indexOf(E e) throws IllegalArgumentException {
+        if (e == null) {throw new IllegalArgumentException();}
+        for (int i = 0; i < size; i++) {
+            if (list[i].equals(e)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
-    public void sort(@NotNull Comparator<? super E> c) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3b)
+    public void sort(@NotNull Comparator<? super E> c) throws IllegalArgumentException {
+        if (c == null) {throw new IllegalArgumentException();}
+        for (int i = 0; i < size-1; i++){
+            for(int j = 0; j < size-1-i; j++){
+                if(c.compare(list[j], list[j+1]) > 0){
+                    E temp = list[j];
+                    list[j] = list[j + 1];
+                    list[j+1] = temp;
+                }
+            }
+        }
     }
 
     /**
@@ -105,7 +151,15 @@ public class ArrayList<E> implements List<E> {
         return (E[]) new Object[length];
     }
 
-    // TODO probably some private helper methods here (avoiding duplicated code)
-    //      (Assignment 3a)
+    private void shiftElementsUpFrom(int pos){
+        for (var i = size-1; i >= pos; i--) {
+            list[i+1] = list[i];
+        }
+    }
+    private void shiftElementsDownTo(int pos) {
+        for (var i = pos; i < size - 1 ; i++) {
+            list[i] = list[i+1];
+        }
+    }
 
 }
