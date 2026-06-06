@@ -283,7 +283,7 @@ public class PersonsGUI extends VBox {
                     map.getOrDefault(person.name, 0) + 1
             );
         }
-        String mostFrequent = null;
+        String mostFrequent = "";
         int max = 0;
         for (String name : map.keySet()) {
             if (map.get(name) > max) {
@@ -307,9 +307,9 @@ public class PersonsGUI extends VBox {
         // TODO Assignment 4a:
         //      compute the min and max age of all persons in the list without using loops;
         //      instead use the stream()...map(...)...reduce(...) interfaces from Lecture 07
-        int minAge = persons.stream().map(Person::getAge).reduce(Integer.MAX_VALUE, Integer::min);
+        Integer minAge = persons.stream().map(Person::getAge).reduce(Integer::min).orElse(null);
         minAgeLabel.setText("Youngest person: " + minAge + " years old ");
-        int maxAge = persons.stream().map(Person::getAge).reduce(Integer.MIN_VALUE, Integer::max);
+        Integer maxAge = persons.stream().map(Person::getAge).reduce(Integer::max).orElse(null);
         maxAgeLabel.setText("Oldest person: " + maxAge + " years old ");
     }
 }
