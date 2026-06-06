@@ -4,6 +4,7 @@ package dk.dtu.compute.course02324.assignment4.functions.uses;
 import dk.dtu.compute.course02324.assignment4.functions.implementations.GenericComparator;
 
 import java.lang.reflect.Field;
+import java.security.spec.ECField;
 import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -148,6 +149,27 @@ public class PersonsGUI extends VBox {
                     update();
                 });
 
+        Button timePassButton = new Button("Time pass");
+        timePassButton.setOnAction(
+                e -> {
+                    try {
+                        // dead if 99
+                        persons.removeIf(p->p.getAge()>=99);
+                        //update weight if over 30
+                        persons.stream()
+                                .filter(p->p.getAge()>30)
+                                .forEach(p->p.setWeight(p.getWeight()*1.08));
+                        //update every age by 1 year
+                        persons.forEach(p -> p.setAge(p.getAge()+1));
+
+                    } catch (Exception er) {
+                        textAreaExceptions.appendText(er.getMessage() + "\n");
+
+                    }
+                    update();
+                }
+        );
+
         TextField indexField = new TextField();
         indexField.setPrefColumnCount(2);
         NonNegativeIntegerWatcher indexWatcher = new NonNegativeIntegerWatcher(indexField, 0); // FIXME could be done in a slightly nicer way
@@ -190,6 +212,7 @@ public class PersonsGUI extends VBox {
                 indexAction,
                 sortButton,
                 clearButton,
+                timePassButton,
                 mostFrequentNameLabel,
                 averageWeightLabel,
                 minAgeLabel,
@@ -296,7 +319,7 @@ public class PersonsGUI extends VBox {
         // TODO Assignment 4a:
         //      compute the average weight of all persons in the list without using loops;
         //      instead use the stream()...map(...)...reduce(...) interfaces from Lecture 07
-        double sumWeight = persons.stream().map(p->p.weight).
+        double sumWeight = persons.stream().map(Person::getWeight).
                 reduce(0.0, Double::sum);
         double avgWeight = sumWeight/persons.toArray().length;
         averageWeightLabel.setText("Average weight: " + avgWeight + " kg");
