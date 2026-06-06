@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A GUI element that is allows the user to interact and
@@ -299,22 +300,14 @@ public class PersonsGUI extends VBox {
         }
         // update display fields
 
-        Map<String, Integer> map = new HashMap<>();
-        for (Person person : persons) {
-            map.put(
-                    person.name,
-                    map.getOrDefault(person.name, 0) + 1
-            );
-        }
-        String mostFrequent = "";
-        int max = 0;
-        for (String name : map.keySet()) {
-            if (map.get(name) > max) {
-                max = map.get(name);
-                mostFrequent = name;
-            }
-        }
-        mostFrequentNameLabel.setText("Most frequent name: " + mostFrequent);
+        Map<String, Long> freq = persons.stream()
+                        .collect(Collectors.groupingBy(
+                                person -> person.name,
+                                Collectors.counting()));
+        String mostFrequentName = freq.entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse("No max");
+
+        mostFrequentNameLabel.setText("Most frequent name: " + mostFrequentName);
 
         // TODO Assignment 4a:
         //      compute the average weight of all persons in the list without using loops;
@@ -330,9 +323,15 @@ public class PersonsGUI extends VBox {
         // TODO Assignment 4a:
         //      compute the min and max age of all persons in the list without using loops;
         //      instead use the stream()...map(...)...reduce(...) interfaces from Lecture 07
-        Integer minAge = persons.stream().map(Person::getAge).reduce(Integer::min).orElse(null);
+        Integer minAge = persons.stream()
+                .map(Person::getAge)
+                .reduce(Integer::min)
+                .orElse(null);
         minAgeLabel.setText("Youngest person: " + minAge + " years old ");
-        Integer maxAge = persons.stream().map(Person::getAge).reduce(Integer::max).orElse(null);
+        Integer maxAge = persons.stream()
+                .map(Person::getAge)
+                .reduce(Integer::max)
+                .orElse(null);
         maxAgeLabel.setText("Oldest person: " + maxAge + " years old ");
     }
 }

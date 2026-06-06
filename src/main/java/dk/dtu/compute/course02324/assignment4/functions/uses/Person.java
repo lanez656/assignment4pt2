@@ -33,6 +33,12 @@ public class Person implements Comparable<Person> {
         this.age = age;
     }
 
+    public String getName() {return name;}
+
+    public double getWeight() {return weight;}
+
+    public void setWeight(double weight) {this.weight = weight;}
+
     public int getAge() {return age;}
 
     public void setAge(int age) throws IllegalArgumentException {
@@ -40,13 +46,7 @@ public class Person implements Comparable<Person> {
         else {throw new IllegalArgumentException("age must not be negative");}
     }
 
-    public double getWeight() {
-        return weight;
-    }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
 
     @Override
     public int compareTo(@NotNull Person o) {
